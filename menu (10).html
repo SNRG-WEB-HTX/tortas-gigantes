@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Menú - Tortas Gigantes el Enmascarado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--red:#DC1E32;--red-dark:#A31526;--white:#FFFEF2;--green:#006847;--gold:#FFD700;--charcoal:#1A1A1A;--ease:cubic-bezier(.16,1,.3,1)}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{font-family:'Inter','Barlow Condensed',sans-serif;color:var(--charcoal);background:var(--white);overflow-x:hidden}
+
+.hamburger{position:fixed;top:24px;right:24px;width:56px;height:56px;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);cursor:pointer;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;transition:all .3s var(--ease);border-radius:50%;z-index:1000;box-shadow:0 4px 20px rgba(0,0,0,.1),0 0 0 1px rgba(220,30,50,.1)}
+.hamburger:hover{transform:scale(1.05);box-shadow:0 6px 28px rgba(220,30,50,.2),0 0 0 2px rgba(220,30,50,.3)}
+.hamburger span{width:24px;height:2.5px;border-radius:2px;transition:all .3s var(--ease);background:#DC1E32}
+.hamburger.active{background:rgba(220,30,50,.95)}
+.hamburger.active span{background:#fff}
+.hamburger.active span:nth-child(1){transform:translateY(8.5px) rotate(45deg)}
+.hamburger.active span:nth-child(2){opacity:0;transform:scale(0)}
+.hamburger.active span:nth-child(3){transform:translateY(-8.5px) rotate(-45deg)}
+
+.menu-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);opacity:0;visibility:hidden;transition:all .4s var(--ease);z-index:998;backdrop-filter:blur(12px)}
+.menu-overlay.active{opacity:1;visibility:visible}
+.menu{position:fixed;top:12px;right:-100%;width:clamp(320px,90vw,420px);max-height:calc(100vh - 24px);background:linear-gradient(135deg,rgba(255,254,242,.98),rgba(255,248,231,.98));border:4px solid var(--red);border-radius:24px;box-shadow:-12px 0 48px rgba(0,0,0,.3);transition:right .6s var(--ease);z-index:999;padding:32px;overflow-y:auto}
+.menu.active{right:12px}
+.menu-header{display:flex;justify-content:flex-start;align-items:center;margin-bottom:28px;padding-bottom:20px;border-bottom:3px solid rgba(220,30,50,.3)}
+.menu-logo{width:80px;height:80px}
+.menu-logo img{width:100%;height:100%;object-fit:contain}
+.menu-items{list-style:none}
+.menu-items li{margin-bottom:10px}
+.menu-items a{display:block;padding:clamp(18px,4vw,24px) clamp(24px,5vw,32px);font-family:'Barlow Condensed',sans-serif;font-size:clamp(1.35rem,3.8vw,1.85rem);font-weight:800;color:var(--charcoal);text-decoration:none;border-radius:14px;transition:all .3s var(--ease);text-transform:uppercase;letter-spacing:0.03em;position:relative;overflow:hidden;line-height:1.4}
+.menu-items a span{display:block;font-size:clamp(1rem,2.8vw,1.35rem);opacity:.8;text-transform:none;letter-spacing:0.02em;margin-top:4px}
+.menu-items a::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--red),var(--green));opacity:0;transition:opacity .3s var(--ease);z-index:-1}
+.menu-items a:hover{color:#fff;transform:translateX(10px)}
+.menu-items a:hover::before{opacity:1}
+
+.hero-section{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;background:radial-gradient(ellipse at center,rgba(255,215,0,.4) 0%,rgba(220,30,50,.6) 30%,rgba(163,21,38,.8) 60%,rgba(139,18,32,.95) 100%);padding:0 5% 80px}
+.hero-section::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 8px,rgba(255,215,0,.15) 8px,rgba(255,215,0,.15) 16px),repeating-linear-gradient(90deg,transparent,transparent 8px,rgba(255,215,0,.1) 8px,rgba(255,215,0,.1) 16px),radial-gradient(circle at 50% 30%,rgba(255,215,0,.35) 0%,transparent 50%);z-index:1;animation:pulse 8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.7}50%{opacity:.95}}
+.hero-section::after{content:'';position:absolute;top:50%;left:50%;width:200%;height:200%;transform:translate(-50%,-50%);background:repeating-conic-gradient(from 0deg,transparent 0deg,transparent 2deg,rgba(255,215,0,.12) 2deg,rgba(255,215,0,.12) 4deg);z-index:0;animation:rotate 40s linear infinite}
+@keyframes rotate{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.hero-content{max-width:1100px;margin:0 auto;text-align:center;position:relative;z-index:2;padding-top:clamp(80px,14vh,140px)}
+
+.hero-logo{max-width:clamp(240px,40vw,420px);margin:0 auto clamp(24px,4.5vw,36px);filter:drop-shadow(0 10px 28px rgba(255,215,0,.5));animation:float 3.5s ease-in-out infinite;position:relative;z-index:3;opacity:.94;mix-blend-mode:screen}
+.hero-logo img{width:100%;height:auto;display:block;border-radius:16px}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+
+.hero-banner-elite{position:relative;margin:0 auto clamp(28px,5.5vw,44px);z-index:3;text-align:center;max-width:min(92vw,900px)}
+.banner-tortas{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.8rem,8.2vw,6.8rem);font-weight:900;color:var(--red);-webkit-text-stroke:clamp(1.5px,.35vw,2.5px) var(--gold);paint-order:stroke fill;text-shadow:4px 4px 0 rgba(0,0,0,.12),0 8px 24px rgba(0,0,0,.3);letter-spacing:0.05em;line-height:1;display:block;margin-bottom:clamp(10px,2.2vw,16px);animation:inflateGigantes 2.5s ease-out forwards;transform-origin:center;word-wrap:break-word;overflow-wrap:break-word;max-width:100%}
+@keyframes inflateGigantes{0%{transform:scale(1);opacity:0}40%{transform:scale(1);opacity:1}60%{transform:scale(1.08);opacity:1}100%{transform:scale(1.05);opacity:1}}
+.banner-enmascarado{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,5.5vw,4.2rem);font-weight:900;color:var(--gold);-webkit-text-stroke:clamp(.8px,.2vw,1.5px) var(--red);paint-order:stroke fill;text-shadow:3px 3px 8px rgba(0,0,0,.4),0 0 20px rgba(255,215,0,.3);letter-spacing:0.12em;line-height:1;display:block;animation:fadeInUp 1.2s ease-out .8s backwards;word-wrap:break-word;overflow-wrap:break-word;max-width:100%}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+.category-nav{background:linear-gradient(135deg,rgba(255,248,240,.98),rgba(255,250,245,.99));padding:clamp(48px,9vw,72px) 5%;position:relative;overflow:hidden}
+.category-nav::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(255,215,0,.03) 10px,rgba(255,215,0,.03) 20px);z-index:0;opacity:.5}
+.category-nav-container{max-width:1400px;margin:0 auto;position:relative;z-index:1}
+.category-nav-title{text-align:center;margin-bottom:clamp(36px,6vw,52px)}
+.category-nav-title h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,5.5vw,3.8rem);font-weight:900;color:var(--red);text-transform:uppercase;letter-spacing:0.02em;margin-bottom:12px;-webkit-text-stroke:clamp(1px,.25vw,1.5px) var(--gold);paint-order:stroke fill}
+.category-nav-title p{font-family:'Barlow Condensed',sans-serif;font-size:clamp(1.1rem,2.8vw,1.5rem);color:var(--charcoal);font-weight:600;opacity:.85}
+
+.category-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),280px));gap:clamp(18px,3.5vw,24px);max-width:1400px;margin:0 auto;justify-content:center}
+
+.category-image-link{display:block;width:100%;max-width:280px;margin:0 auto;transition:all .3s var(--ease);cursor:pointer;text-decoration:none;border-radius:20px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.1)}
+.category-image-link:hover{transform:translateY(-8px) scale(1.03);box-shadow:0 12px 32px rgba(220,30,50,.25)}
+.category-image-link:active{transform:translateY(-4px) scale(1.01)}
+
+.category-image-link img{width:100%;height:auto;display:block;transition:transform .3s var(--ease);image-rendering:-webkit-optimize-contrast;-ms-interpolation-mode:bicubic;filter:contrast(1.1) saturate(1.14) brightness(1.03);backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:translateZ(0) scale(1);-webkit-transform:translateZ(0) scale(1);will-change:transform}
+.category-image-link:hover img{transform:scale(1.02) translateZ(0);filter:contrast(1.14) saturate(1.18) brightness(1.05)}
+
+.menu-section{padding:clamp(60px,10vw,90px) 5%;position:relative;background:linear-gradient(135deg,rgba(255,248,240,.95),rgba(255,250,245,.98))}
+.section-container{max-width:1400px;margin:0 auto;position:relative}
+.category-block{margin-bottom:clamp(60px,11vw,100px);scroll-margin-top:140px}
+.category-header{text-align:center;margin-bottom:clamp(40px,7vw,60px)}
+.category-label{font-size:clamp(.95rem,2.3vw,1.25rem);color:var(--charcoal);text-transform:uppercase;letter-spacing:.2em;margin-bottom:16px;font-weight:700;font-family:'Barlow Condensed',sans-serif;word-wrap:break-word;overflow-wrap:break-word;max-width:100%;line-height:1.5}
+.category-title{font-size:clamp(2.5rem,7.5vw,5rem);font-weight:900;line-height:1;letter-spacing:-0.02em;margin-bottom:20px;font-family:'Bebas Neue',sans-serif;text-transform:uppercase;position:relative;display:inline-block;color:var(--red);-webkit-text-stroke:clamp(1.5px,.35vw,2px) var(--gold);paint-order:stroke fill;text-shadow:4px 4px 0 rgba(0,0,0,.1);max-width:98%;word-wrap:break-word;overflow-wrap:break-word;hyphens:none}
+.category-title-english{display:block;font-size:clamp(1.4rem,4.2vw,2.8rem);color:var(--charcoal);margin-top:16px;font-weight:700;font-style:italic;font-family:'Barlow Condensed',sans-serif;-webkit-text-stroke:0;line-height:1.3;word-wrap:break-word;overflow-wrap:break-word;max-width:100%}
+
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:clamp(28px,5.5vw,44px);margin-top:clamp(36px,6vw,52px)}
+
+.menu-item-card{background:#fff;border-radius:20px;padding:clamp(24px,5vw,32px);box-shadow:0 6px 24px rgba(0,0,0,.06),0 0 0 1px rgba(0,0,0,.02);transition:all .35s var(--ease);position:relative;overflow:hidden}
+.menu-item-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(to right,var(--green) 0%,var(--green) 33.33%,#fff 33.33%,#fff 66.66%,var(--red) 66.66%,var(--red) 100%)}
+.menu-item-card:hover{transform:translateY(-10px);box-shadow:0 20px 56px rgba(0,0,0,.14),0 0 0 1px rgba(220,30,50,.08)}
+
+.item-header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:clamp(12px,2.5vw,16px);padding-top:clamp(6px,1.2vw,8px)}
+.item-name{font-family:'Barlow Condensed',sans-serif;font-size:clamp(1.35rem,3.5vw,1.85rem);font-weight:900;color:var(--charcoal);text-transform:uppercase;letter-spacing:-.01em;line-height:1.25;flex:1;word-wrap:break-word;overflow-wrap:break-word}
+.item-price{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.4rem,3.5vw,2rem);font-weight:900;color:var(--green);flex-shrink:0;white-space:nowrap}
+
+.item-description{font-size:clamp(12px,2.6vw,14.5px);line-height:1.65;color:var(--charcoal);font-weight:500;word-wrap:break-word;overflow-wrap:break-word;margin-bottom:8px}
+.item-description-english{font-size:clamp(11px,2.4vw,13.5px);line-height:1.6;color:var(--charcoal);font-weight:500;font-style:italic;opacity:.82;word-wrap:break-word;overflow-wrap:break-word}
+
+.footer{background:radial-gradient(ellipse at center,rgba(139,18,32,.95) 0%,rgba(163,21,38,.9) 40%,rgba(220,30,50,.85) 100%);padding:clamp(64px,10vw,88px) 5%;color:#fff;text-align:center;position:relative;overflow:hidden}
+.footer::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 8px,rgba(255,215,0,.08) 8px,rgba(255,215,0,.08) 16px),repeating-linear-gradient(90deg,transparent,transparent 8px,rgba(255,215,0,.06) 8px,rgba(255,215,0,.06) 16px);z-index:0;animation:pulse 8s ease-in-out infinite;opacity:.4}
+.footer::after{content:'';position:absolute;top:50%;left:50%;width:200%;height:200%;transform:translate(-50%,-50%);background:repeating-conic-gradient(from 0deg,transparent 0deg,transparent 2deg,rgba(255,215,0,.08) 2deg,rgba(255,215,0,.08) 4deg);z-index:0;animation:rotate 60s linear infinite}
+.footer-content{max-width:840px;margin:0 auto;position:relative;z-index:2}
+.footer-logo{width:clamp(110px,20vw,140px);height:clamp(110px,20vw,140px);margin:0 auto clamp(28px,5vw,36px);background:transparent;border-radius:12px;padding:14px;position:relative;box-shadow:0 8px 32px rgba(0,0,0,.4),0 0 0 4px var(--gold);animation:float 4s ease-in-out infinite}
+.footer-logo img{width:100%;height:100%;object-fit:contain}
+.footer-title{font-family:'Bebas Neue',sans-serif;margin-bottom:clamp(16px,3.2vw,20px);text-transform:uppercase;line-height:1.1;display:flex;flex-direction:column;align-items:center;gap:clamp(6px,1.2vw,10px)}
+.footer-title-tortas{font-size:clamp(2.6rem,7.2vw,4.4rem);font-weight:900;color:var(--red);-webkit-text-stroke:clamp(1.2px,.3vw,2px) var(--gold);paint-order:stroke fill;text-shadow:3px 3px 8px rgba(0,0,0,.5),-2px -2px 0 rgba(0,0,0,.3),2px -2px 0 rgba(0,0,0,.3),-2px 2px 0 rgba(0,0,0,.3),2px 2px 0 rgba(0,0,0,.3);letter-spacing:0.03em;display:block}
+.footer-title-enmascarado{font-size:clamp(1.9rem,5.2vw,3.2rem);font-weight:900;color:var(--gold);-webkit-text-stroke:clamp(.8px,.18vw,1.4px) var(--red);paint-order:stroke fill;text-shadow:3px 3px 8px rgba(0,0,0,.5);letter-spacing:0.08em;display:block}
+.footer-subtitle{font-size:clamp(1.15rem,3.2vw,1.55rem);margin-bottom:clamp(30px,5.2vw,42px);font-weight:600;color:rgba(255,255,255,.95);line-height:1.6}
+.footer-subtitle-spanish{display:block;margin-bottom:8px}
+.footer-subtitle-english{display:block;opacity:.85}
+.footer-info{font-size:clamp(1.05rem,2.6vw,1.25rem);line-height:1.8;margin-bottom:clamp(40px,7vw,56px);font-weight:500}
+.footer-phone{color:var(--gold);text-decoration:none;font-weight:800;transition:color .3s}
+.footer-phone:hover{color:var(--white)}
+.footer-social{display:flex;align-items:center;justify-content:center;gap:clamp(8px,2vw,12px);margin-top:clamp(16px,3vw,20px);font-size:clamp(1rem,2.4vw,1.2rem);font-weight:700}
+.footer-social svg{width:clamp(22px,5vw,28px);height:clamp(22px,5vw,28px);fill:var(--gold)}
+.footer-social a{color:var(--gold);text-decoration:none;transition:color .3s}
+.footer-social a:hover{color:var(--white)}
+.footer-credit{margin-top:clamp(48px,8vw,64px);padding-top:clamp(28px,5vw,36px);border-top:1px solid rgba(255,255,255,.15);font-size:clamp(.92rem,2.2vw,1.05rem);color:rgba(255,255,255,.65);font-weight:400;letter-spacing:0.03em}
+.footer-credit a{color:var(--gold);text-decoration:none;font-weight:700;transition:color .3s;letter-spacing:0.05em}
+.footer-credit a:hover{color:var(--white)}
+
+.fade-element{opacity:0;transform:translateY(80px);transition:opacity 1.3s var(--ease),transform 1.3s var(--ease)}
+.fade-element.visible{opacity:1;transform:translateY(0)}
+
+@media (max-width:768px){
+.hamburger{width:52px;height:52px;top:20px;right:20px}
+.menu{max-width:calc(100vw - 24px)}
+.menu-grid{grid-template-columns:1fr}
+.category-grid{grid-template-columns:repeat(2,1fr);gap:clamp(16px,3vw,20px)}
+.category-image-link{max-width:100%;border-radius:16px}
+.category-image-link img{image-rendering:-webkit-optimize-contrast;-ms-interpolation-mode:bicubic;transform:translateZ(0) scale(1)}
+.hero-content{padding-top:clamp(70px,14vh,100px)}
+}
+
+@media (max-width:480px){
+.hamburger{width:48px;height:48px;top:16px;right:16px;gap:5px}
+.hamburger span{width:22px}
+.menu{width:calc(100vw - 24px);padding:24px 20px}
+.menu-logo{width:70px;height:70px}
+.menu-header{margin-bottom:20px;padding-bottom:16px}
+.hero-logo{max-width:85vw}
+.hero-content{padding-top:60px}
+.category-grid{grid-template-columns:1fr;gap:clamp(20px,4vw,24px)}
+.category-image-link{max-width:100%;margin:0 auto;border-radius:18px}
+.category-image-link img{image-rendering:-webkit-optimize-contrast;-ms-interpolation-mode:bicubic;transform:translateZ(0) scale(1)}
+}
+</style>
+</head>
+<body>
+<button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+<div class="menu-overlay" id="menuOverlay"></div>
+<nav class="menu" id="menu">
+<div class="menu-header">
+<div class="menu-logo"><img src="https://cdn.prod.website-files.com/694c2e657b011602165bcb67/694c5fae4d36f47709193789_ChatGPT%20Image%20Dec%2024%2C%202025%2C%2003_48_24%20PM.webp" alt="Logo"></div>
+</div>
+<ul class="menu-items">
+<li><a href="index.html">Inicio<br><span>(Home)</span></a></li>
+<li><a href="menu.html">Menú<br><span>(Menu)</span></a></li>
+<li><a href="our-story.html">Nuestra Historia<br><span>(Our Story)</span></a></li>
+<li><a href="index.html#ubicacion">Ubicación<br><span>(Location)</span></a></li>
+</ul>
+</nav>
+<main>
+<section class="hero-section">
+<div class="hero-content">
+<div class="hero-logo"><img src="https://cdn.prod.website-files.com/694c2e657b011602165bcb67/694eff4a01057ce0b8118293_ChatGPT%20Image%20Dec%2026%2C%202025%2C%2003_33_32%20PM.webp" alt="Tortas Gigantes"></div>
+<div class="hero-banner-elite">
+<span class="banner-tortas">NUESTRO MENÚ</span>
+<span class="banner-enmascarado">OUR MENU</span>
+</div>
+</div>
+</section>
+
+<section class="category-nav">
+<div class="category-nav-container">
+<div class="category-nav-title fade-element">
+<h2>SELECCIONA TU CATEGORÍA</h2>
+<p>(Choose Your Category)</p>
+</div>
+<div class="category-grid">
+<a href="#tortas" class="category-image-link fade-element">
+<img src="https://cdn.prod.website-files.com/694c2e657b011602165bcb67/6950193536cd473719b7034e_torta%20menu%2012.27.25.png" alt="Tortas Menu">
+</a>
+<a href="#hamburguesas" class="category-image-link fade-element">
+<img src="https://cdn.prod.website-files.com/694c2e657b011602165bcb67/69501934c69bf3f95aac240d_burger%20menu%2012.27.25.png" alt="Burgers Menu">
+</a>
+<a href="#premium" class="category-image-link fade-element">
+<img src="https://cdn.prod.website-files.com/694c2e657b011602165bcb67/6950198b56e0064e6af9c1f2_premium%20menu%2012.27.25.png" alt="Premium Menu">
+</a>
+<a href="#birria" class="category-image-link fade-element">
+<img src="https://cdn.prod.website-files.com/694c2e657b011602165bcb67/695019e51b15c0725b196fdb_birria%20menu%2012.27.25.png" alt="Birria Menu">
+</a>
+<a href="#ninos" class="category-image-link fade-element">
+<img src="https://cdn.prod.website-files.com/694c2e657b011602165bcb67/69501a2a41a35e17f898e1b0_kids%20menu%2012.27.25.png" alt="Kids Menu">
+</a>
+<a href="#bebidas" class="category-image-link fade-element">
+<img src="https://cdn.prod.website-files.com/694c2e657b011602165bcb67/69501ae8cc042324a95db244_postres%20y%20bebidas%20menu%2012.27.25.png" alt="Postres y Bebidas Menu">
+</a>
+</div>
+</div>
+</section>
+
+<section class="menu-section">
+<div class="section-container">
+
+<!-- TORTAS GIGANTES $14 -->
+<div class="category-block" id="tortas">
+<div class="category-header fade-element">
+<p class="category-label">Especialidades de la Casa</p>
+<h2 class="category-title">
+Tortas Gigantes
+<span class="category-title-english">(Giant Tortas)</span>
+</h2>
+</div>
+
+<div class="menu-grid">
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">Campechana</h3>
+<span class="item-price">$14.00</span>
+</div>
+<p class="item-description">Salchicha, carne asada, longaniza, queso derretido y aguacate</p>
+<p class="item-description-english">(Wiener, grilled steak, longaniza sausage, melted cheese and avocado)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">La Chilaquil</h3>
+<span class="item-price">$14.00</span>
+</div>
+<p class="item-description">Chilaquiles Verdes o rojos, crema, queso fresco, cebolla, y opción de carne asada, huevo o milanesa</p>
+<p class="item-description-english">(Green or red chilaquiles, sour cream, fresh cheese, onion, with choice of grilled steak, egg or breaded beef)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">La Chipocluda</h3>
+<span class="item-price">$14.00</span>
+</div>
+<p class="item-description">Salchicha, jamón, queso derretido, cebolla asada, adobo de puerco, salsa chipotle y aguacate</p>
+<p class="item-description-english">(Wiener, ham, melted cheese, grilled onion, marinated pork, chipotle sauce and avocado)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">La Verde</h3>
+<span class="item-price">$14.00</span>
+</div>
+<p class="item-description">Frijoles, lechuga, cebolla, tomate, queso derretido y aguacate</p>
+<p class="item-description-english">(Beans, lettuce, onion, tomato, melted cheese and avocado)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">Milanesa</h3>
+<span class="item-price">$14.00</span>
+</div>
+<p class="item-description">Milanesa de res, frijoles, queso derretido, lechuga, tomate, aguacate, cebolla y salsa chipotle</p>
+<p class="item-description-english">(Breaded beef, beans, melted cheese, lettuce, tomato, avocado, onion and chipotle sauce)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">Pambazo</h3>
+<span class="item-price">$14.00</span>
+</div>
+<p class="item-description">Crema, queso fresco, papa con chorizo y lechuga</p>
+<p class="item-description-english">(Sour cream, fresh cheese, potato with chorizo and lettuce)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">Tradicional</h3>
+<span class="item-price">$14.00</span>
+</div>
+<p class="item-description">Huevo con chorizo, frijoles, queso fresco y aguacate</p>
+<p class="item-description-english">(Egg with chorizo, beans, fresh cheese and avocado)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">La Floja</h3>
+<span class="item-price">$14.00</span>
+</div>
+<p class="item-description">Huevo con salchicha, jamón, cebolla asada, queso fresco y aguacate</p>
+<p class="item-description-english">(Egg with wiener, ham, grilled onion, fresh cheese and avocado)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">La Salchichona</h3>
+<span class="item-price">$14.00</span>
+</div>
+<p class="item-description">Salchicha, queso derretido, cebolla asada y aguacate</p>
+<p class="item-description-english">(Wiener, melted cheese, grilled onion and avocado)</p>
+</div>
+</div>
+</div>
+
+<!-- HAMBURGUESAS -->
+<div class="category-block" id="hamburguesas">
+<div class="category-header fade-element">
+<p class="category-label">Hamburguesas Especiales</p>
+<h2 class="category-title">
+Hamburguesas
+<span class="category-title-english">(Burgers)</span>
+</h2>
+</div>
+
+<div class="menu-grid">
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">Pastorela</h3>
+<span class="item-price">$8.50</span>
+</div>
+<p class="item-description">Jamón, queso derretido, carne de hamburguesa, piña y carne al pastor</p>
+<p class="item-description-english">(Ham, melted cheese, burger patty, pineapple and al pastor meat)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">Genesis</h3>
+<span class="item-price">$9.50</span>
+</div>
+<p class="item-description">Jamón, queso derretido, 2 carnes de hamburguesa, piña y cebolla asada con salsa picante</p>
+<p class="item-description-english">(Ham, melted cheese, 2 burger patties, pineapple and grilled onion with spicy sauce)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">Hawaiana</h3>
+<span class="item-price">$7.00</span>
+</div>
+<p class="item-description">Jamón, queso derretido, piña, y carne de hamburguesa</p>
+<p class="item-description-english">(Ham, melted cheese, pineapple and burger patty)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">Adobada</h3>
+<span class="item-price">$8.50</span>
+</div>
+<p class="item-description">Jamón, queso derretido, carne de hamburguesa y carne de puerco adobada</p>
+<p class="item-description-english">(Ham, melted cheese, burger patty and marinated pork)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">Picosita</h3>
+<span class="item-price">$7.50</span>
+</div>
+<p class="item-description">Jamón, queso derretido, carne de hamburguesa, cebolla asada, y salsa picante</p>
+<p class="item-description-english">(Ham, melted cheese, burger patty, grilled onion and spicy sauce)</p>
+</div>
+</div>
+</div>
+
+<!-- TORTAS PREMIUM $19.99 -->
+<div class="category-block" id="premium">
+<div class="category-header fade-element">
+<p class="category-label">Tortas Premium</p>
+<h2 class="category-title">
+Especiales
+<span class="category-title-english">(Premium Specials)</span>
+</h2>
+</div>
+
+<div class="menu-grid">
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">La de Carne Asada</h3>
+<span class="item-price">$19.99</span>
+</div>
+<p class="item-description">Carne asada, queso derretido, salchicha, jamón y aguacate</p>
+<p class="item-description-english">(Grilled steak, melted cheese, wiener, ham and avocado)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">La Suprema</h3>
+<span class="item-price">$19.99</span>
+</div>
+<p class="item-description">Milanesa, chorizo, salchicha, jamón, queso derretido, cebolla asada, adobo de puerco, salsa chipotle y aguacate</p>
+<p class="item-description-english">(Breaded beef, chorizo, wiener, ham, melted cheese, grilled onion, marinated pork, chipotle sauce and avocado)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">La del 8</h3>
+<span class="item-price">$19.99</span>
+</div>
+<p class="item-description">Jamón, queso derretido o fresco, tomate, lechuga y aguacate</p>
+<p class="item-description-english">(Ham, melted or fresh cheese, tomato, lettuce and avocado)</p>
+</div>
+</div>
+</div>
+
+<!-- BIRRIA & SPECIALTIES -->
+<div class="category-block" id="birria">
+<div class="category-header fade-element">
+<p class="category-label">Platillos Especiales</p>
+<h2 class="category-title">
+Birria y Más
+<span class="category-title-english">(Birria & More)</span>
+</h2>
+</div>
+
+<div class="menu-grid">
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">Orden de Quesabirrias</h3>
+<span class="item-price">$10.00</span>
+</div>
+<p class="item-description">Deliciosas quesabirrias con consomé</p>
+<p class="item-description-english">(Delicious quesabirrias with consommé)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">Orden de Tacobirria</h3>
+<span class="item-price">$10.00</span>
+</div>
+<p class="item-description">Tacos de birria con consomé</p>
+<p class="item-description-english">(Birria tacos with consommé)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">Birria Ramen</h3>
+<span class="item-price">$7.50 / $10</span>
+</div>
+<p class="item-description">Chico $7.50 | Grande $10.00</p>
+<p class="item-description-english">(Small $7.50 | Large $10.00)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">Chilaquiles</h3>
+<span class="item-price">$12.00</span>
+</div>
+<p class="item-description">Verdes o rojos</p>
+<p class="item-description-english">(Green or red)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">Orden de 5 Mini Tacos</h3>
+<span class="item-price">$9.50</span>
+</div>
+<p class="item-description">Carne asada, pastor, longaniza, pollo y campechanos (escoger solo dos carnes)</p>
+<p class="item-description-english">(Grilled steak, al pastor, longaniza, chicken and mixed - choose any two meats)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">4 Mini Tacos de Milanesa</h3>
+<span class="item-price">$10.00</span>
+</div>
+<p class="item-description">Mini tacos con milanesa crujiente</p>
+<p class="item-description-english">(Mini tacos with crispy breaded beef)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">Flautas de Pollo</h3>
+<span class="item-price">$12.00</span>
+</div>
+<p class="item-description">Flautas crujientes de pollo</p>
+<p class="item-description-english">(Crispy chicken flautas)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">Quesadillas</h3>
+<span class="item-price">$7.50</span>
+</div>
+<p class="item-description">Quesadillas tradicionales</p>
+<p class="item-description-english">(Traditional quesadillas)</p>
+</div>
+</div>
+</div>
+
+<!-- NIÑOS - KIDS MENU $8.50 -->
+<div class="category-block" id="ninos">
+<div class="category-header fade-element">
+<p class="category-label">Menú Para Los Pequeños</p>
+<h2 class="category-title">
+Niños
+<span class="category-title-english">(Kids Menu)</span>
+</h2>
+</div>
+
+<div class="menu-grid">
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">Hotdog</h3>
+<span class="item-price">$8.50</span>
+</div>
+<p class="item-description">Hotdog, papas fritas y jugo - JUGUETE SORPRESA CON CADA COMIDA (mientras duren las reservas)</p>
+<p class="item-description-english">(Hotdog, french fries and juice - SURPRISE TOY WITH EVERY MEAL while supplies last)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">Dos Tacos</h3>
+<span class="item-price">$8.50</span>
+</div>
+<p class="item-description">Dos tacos, papas fritas y jugo - JUGUETE SORPRESA CON CADA COMIDA (mientras duren las reservas)</p>
+<p class="item-description-english">(Two tacos, french fries and juice - SURPRISE TOY WITH EVERY MEAL while supplies last)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">Quesadilla</h3>
+<span class="item-price">$8.50</span>
+</div>
+<p class="item-description">Quesadilla (solo queso), papas fritas y jugo - JUGUETE SORPRESA CON CADA COMIDA (mientras duren las reservas)</p>
+<p class="item-description-english">(Quesadilla cheese only, french fries and juice - SURPRISE TOY WITH EVERY MEAL while supplies last)</p>
+</div>
+</div>
+</div>
+
+<!-- POSTRES Y BEBIDAS -->
+<div class="category-block" id="bebidas">
+<div class="category-header fade-element">
+<p class="category-label">Dulces y Refrescos</p>
+<h2 class="category-title">
+Postres y Bebidas
+<span class="category-title-english">(Desserts & Drinks)</span>
+</h2>
+</div>
+
+<div class="menu-grid">
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">Fresas con Crema</h3>
+<span class="item-price">$7.50</span>
+</div>
+<p class="item-description">Fresas frescas con crema</p>
+<p class="item-description-english">(Fresh strawberries with cream)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">Churros (4)</h3>
+<span class="item-price">$5.00</span>
+</div>
+<p class="item-description">Churros crujientes y dulces</p>
+<p class="item-description-english">(Crispy and sweet churros)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">Aguas Frescas</h3>
+<span class="item-price">$4.50</span>
+</div>
+<p class="item-description">Aguas naturales del día</p>
+<p class="item-description-english">(Fresh waters of the day)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">Licuados</h3>
+<span class="item-price">$6.50</span>
+</div>
+<p class="item-description">Chocolate, plátano, fresa</p>
+<p class="item-description-english">(Chocolate, banana, strawberry)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">Agua Mineral</h3>
+<span class="item-price">$4.50</span>
+</div>
+<p class="item-description">Agua mineral embotellada</p>
+<p class="item-description-english">(Bottled mineral water)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">Café de Olla</h3>
+<span class="item-price">$2.50</span>
+</div>
+<p class="item-description">Café tradicional mexicano</p>
+<p class="item-description-english">(Traditional Mexican coffee)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">Cerveza Importada</h3>
+<span class="item-price">$4.50</span>
+</div>
+<p class="item-description">Selección de cervezas importadas</p>
+<p class="item-description-english">(Selection of imported beers)</p>
+</div>
+
+<div class="menu-item-card fade-element">
+<div class="item-header">
+<h3 class="item-name">Cerveza Doméstica</h3>
+<span class="item-price">$3.50</span>
+</div>
+<p class="item-description">Cervezas nacionales</p>
+<p class="item-description-english">(Domestic beers)</p>
+</div>
+</div>
+</div>
+
+</div>
+</section>
+</main>
+
+<footer class="footer">
+<div class="footer-content">
+<div class="footer-logo"><img src="https://cdn.prod.website-files.com/694c2e657b011602165bcb67/694c5fae4d36f47709193789_ChatGPT%20Image%20Dec%2024%2C%202025%2C%2003_48_24%20PM.webp" alt="Logo"></div>
+<h2 class="footer-title"><span class="footer-title-tortas">Tortas Gigantes</span><span class="footer-title-enmascarado">el Enmascarado</span></h2>
+<p class="footer-subtitle"><span class="footer-subtitle-spanish">Las Mejores Tortas de Houston</span><span class="footer-subtitle-english">(Houston's Best Tortas)</span></p>
+<div class="footer-info">
+<p>13214 W Little York Rd<br>Houston, TX 77041</p>
+<p style="margin-top:14px"><a href="tel:3465949562" class="footer-phone">(346) 594-9562</a></p>
+<div class="footer-social"><svg viewBox="0 0 24 24"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/></svg><a href="https://instagram.com/tortas_elenmascarado" target="_blank" rel="noopener">@tortas_elenmascarado</a></div>
+<p style="margin-top:14px">Lun-Mié (Mon-Wed): 11am-8pm<br>Jue-Sáb (Thu-Sat): 11am-9pm<br>Domingo (Sunday): Cerrado (Closed)</p>
+</div>
+<div class="footer-credit">Crafted with precision by <a href="https://snrgweb.com" target="_blank" rel="noopener">SNRG WEB</a></div>
+</div>
+</footer>
+<script>
+(()=>{
+'use strict';
+if('scrollRestoration'in history)history.scrollRestoration='manual';
+window.scrollTo({top:0,left:0,behavior:'instant'});
+window.addEventListener('beforeunload',()=>{window.scrollTo({top:0,left:0,behavior:'instant'})});
+const h=document.getElementById('hamburger'),m=document.getElementById('menu'),o=document.getElementById('menuOverlay'),i=document.querySelectorAll('.menu-items a');
+function openMenu(){h.classList.add('active');m.classList.add('active');o.classList.add('active');document.body.style.overflow='hidden'}
+function closeMenu(){h.classList.remove('active');m.classList.remove('active');o.classList.remove('active');document.body.style.overflow=''}
+h.addEventListener('click',()=>h.classList.contains('active')?closeMenu():openMenu());
+o.addEventListener('click',closeMenu);
+
+// Menu links - handle both page links and anchor links
+i.forEach(a=>a.addEventListener('click',function(e){
+  const href=this.getAttribute('href');
+  
+  // If it's an anchor link (starts with #), handle scroll
+  if(href.startsWith('#')){
+    e.preventDefault();
+    const targetEl=document.querySelector(href);
+    closeMenu();
+    setTimeout(()=>{
+      if(targetEl){
+        const offset=100;
+        const position=targetEl.getBoundingClientRect().top+window.pageYOffset-offset;
+        window.scrollTo({top:position,behavior:'smooth'});
+      }
+    },300);
+  } else {
+    // For page links, just close menu and let browser navigate
+    closeMenu();
+  }
+}));
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&m.classList.contains('active'))closeMenu()});
+const catCards=document.querySelectorAll('.category-image-link');
+catCards.forEach(card=>{card.addEventListener('click',function(e){e.preventDefault();const target=this.getAttribute('href');const element=document.querySelector(target);if(element){const offset=100;const position=element.getBoundingClientRect().top+window.pageYOffset-offset;window.scrollTo({top:position,behavior:'smooth'})}})});
+const observer=new IntersectionObserver(e=>{e.forEach(t=>{if(t.isIntersecting){t.target.classList.add('visible');observer.unobserve(t.target)}})},{threshold:0.08,rootMargin:'0px 0px -80px 0px'});
+document.querySelectorAll('.fade-element').forEach(el=>observer.observe(el));
+})();
+</script>
+</body>
+</html>
